@@ -1,7 +1,7 @@
 expname = test_generated_liver_two_nets_reg_scatter_sampling
 loss = l2
 basedir = ./logs
-datadir = /home/cy/Gra_design/ultra-nerf/data/synthetic_testing/r2
+datadir = /home2/yzh/us_nerf_pro/data/synthetic_testing/r2
 dataset_type = us
 no_batching = True
 output_ch = 5
