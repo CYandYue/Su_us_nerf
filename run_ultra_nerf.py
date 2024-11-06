@@ -212,7 +212,14 @@ def render_rays_us(ray_batch,
 
 
 def batchify_rays(rays_flat, c2w=None, chunk=32 * 256, **kwargs):
-    """Render rays in smaller minibatches to avoid OOM."""
+    """Render rays in smaller minibatches to avoid OOM.(out of memory)"""
+    """
+    
+    rays_flat: (N,8) which is (x,y,z, roll, pitch, yaw, near, far)
+    c2w:       camera to world
+    chunk:     every time randering ray's number
+    
+    """
     all_ret = {}
     for i in range(0, rays_flat.shape[0], chunk):
         ret = render_rays_us(rays_flat[i:i + chunk], **kwargs)
@@ -242,12 +249,15 @@ def render_us(H, W, sw, sh,
     sh = rays_d.shape  # [..., 3]
 
     # Create ray batch
+    # reshape to (N,3),N rays,each ray has 3 position which is (x,y,z)
     rays_o = tf.cast(tf.reshape(rays_o, [-1, 3]), dtype=tf.float32)
     rays_d = tf.cast(tf.reshape(rays_d, [-1, 3]), dtype=tf.float32)
+    # create (N,1) corresponding to N near/far
     near, far = near * \
                 tf.ones_like(rays_d[..., :1]), far * tf.ones_like(rays_d[..., :1])
 
     # (ray origin, ray direction, min dist, max dist) for each ray
+    # reshape, concate to (N,8) which is (x,y,z, roll, pitch, yaw, near, far)
     rays = tf.concat([rays_o, rays_d, near, far], axis=-1)
 
     # Render and reshape
