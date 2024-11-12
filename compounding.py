@@ -19,13 +19,13 @@ import pretrain as run_nerf_ultrasound
 from load_us import load_us_data
 
 basedir = './logs'
-expname = 'synthetic_200k'
+expname = 'spine_phantom_left1'
 
 config = os.path.join(basedir, expname, 'config.txt')
 print('Args:')
 print(open(config, 'r').read())
 parser = run_nerf_ultrasound.config_parser()
-model_no = 'model_200000'
+model_no = 'model_020000'
 
 args = parser.parse_args('--config {} --ft_path {}'.format(config, os.path.join(basedir, expname, model_no + ".npy")))
 print('loaded args')
@@ -109,12 +109,21 @@ for i, c2w in enumerate(poses):
     
     cloud_raw = tf.concat([position, prob_border, border_indicator], axis=-1)
 
-    cloud_filtered = cloud_raw[cloud_raw[..., 3] > 0.8]
+    cloud_filtered = cloud_raw[cloud_raw[..., 3] > 0.4]
     cloud_filtered = cloud_filtered[..., 0:3]
     
+    # print(cloud_filtered)
+    
+    sample_ratio = 1
+    sample_size = int(cloud_filtered.shape[0] / sample_ratio)
+    indices = np.random.choice(cloud_filtered.shape[0], size=sample_size, replace=False)
+    # print(indices)
+    cloud_filtered_sampled = tf.gather(cloud_filtered, indices)
+    
     if i == 0:
-        point_cloud_tf = cloud_filtered
-    point_cloud_tf = tf.concat([point_cloud_tf, cloud_filtered], axis=0)
+        point_cloud_tf = cloud_filtered_sampled
+    else:
+        point_cloud_tf = tf.concat([point_cloud_tf, cloud_filtered_sampled], axis=0)
     
 
 

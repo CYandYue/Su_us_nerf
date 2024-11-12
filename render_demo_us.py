@@ -18,13 +18,14 @@ import pretrain as run_nerf_ultrasound
 from load_us import load_us_data
 
 basedir = './logs'
-expname = 'synthetic_200k'
+# expname = 'synthetic_200k'
+expname = 'spine_phantom_all_sweeps'
 
 config = os.path.join(basedir, expname, 'config.txt')
 print('Args:')
 print(open(config, 'r').read())
 parser = run_nerf_ultrasound.config_parser()
-model_no = 'model_200000'
+model_no = 'model_020000'
 
 args = parser.parse_args('--config {} --ft_path {}'.format(config, os.path.join(basedir, expname, model_no + ".npy")))
 print('loaded args')
