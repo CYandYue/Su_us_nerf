@@ -14,7 +14,7 @@ import pathlib
 
 import matplotlib.pyplot as plt
 
-import run_ultra_nerf as run_nerf_ultrasound
+import pretrain as run_nerf_ultrasound
 from load_us import load_us_data
 
 basedir = './logs'

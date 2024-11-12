@@ -211,6 +211,68 @@ def render_rays_us(ray_batch,
 
     return ret
 
+def render_rays_us_compounding(ray_batch,
+                   network_fn,
+                   network_query_fn,
+                   N_samples,
+                   retraw=False,
+                   lindisp=False,
+                   args=None):
+    """Volumetric rendering.
+
+        Args:
+          ray_batch: array of shape [batch_size, ...]. We define rays and do not sample.
+
+        Returns:
+
+        """
+
+    ###############################
+    # batch size
+    N_rays = ray_batch.shape[0]
+
+    # Extract ray origin, direction.
+    rays_o, rays_d = ray_batch[:, 0:3], ray_batch[:, 3:6]  # [N_rays, 3] each
+
+    # Extract unit-normalized viewing direction.
+    viewdirs = ray_batch[:, -3:] if ray_batch.shape[-1] > 8 else None
+
+    # Extract lower, upper bound for ray distance.
+    bounds = tf.reshape(ray_batch[..., 6:8], [-1, 1, 2])
+    near, far = bounds[..., 0], bounds[..., 1]  # [-1,1]
+
+    # Decide where to sample along each ray. Under the logic, all rays will be sampled at
+    # the same times.
+    t_vals = tf.linspace(0., 1., N_samples)
+    if not lindisp:
+        # Space integration times linearly between 'near' and 'far'. Same
+        # integration points will be used for all rays.
+        z_vals = near * (1. - t_vals) + far * (t_vals)
+    else:
+        # Sample linearly in inverse depth (disparity).
+        z_vals = 1. / (1. / near * (1. - t_vals) + 1. / far * (t_vals))
+    z_vals = tf.broadcast_to(z_vals, [N_rays, N_samples])
+
+    # Points in space to evaluate model at.
+    origin = rays_o[..., None, :]
+    step = rays_d[..., None, :] * \
+           z_vals[..., :, None]
+
+    pts = step + origin
+
+    # Evaluate model at each point.
+    raw = network_query_fn(pts, network_fn)  # [N_rays, N_samples, 5]
+    prob_border = tf.math.sigmoid(raw[..., 2])
+    border_distribution = tfp.distributions.Bernoulli(probs=prob_border, dtype=tf.float32)
+    border_indicator = tf.stop_gradient(border_distribution.sample(seed=0))
+
+    ret = {'position': pts,
+           'prob_border': prob_border,
+           'border_sample':border_indicator}
+
+    return ret
+
+
 
 def batchify_rays(rays_flat, c2w=None, chunk=32 * 256, **kwargs):
     """Render rays in smaller minibatches to avoid OOM."""
@@ -225,6 +287,18 @@ def batchify_rays(rays_flat, c2w=None, chunk=32 * 256, **kwargs):
     all_ret = {k: tf.concat(all_ret[k], 0) for k in all_ret}
     return all_ret
 
+def batchify_rays_compounding(rays_flat, c2w=None, chunk=32 * 256, **kwargs):
+    """Render rays in smaller minibatches to avoid OOM."""
+    all_ret = {}
+    for i in range(0, rays_flat.shape[0], chunk):
+        ret = render_rays_us_compounding(rays_flat[i:i + chunk], **kwargs)
+        for k in ret:
+            if k not in all_ret:
+                all_ret[k] = []
+            all_ret[k].append(ret[k])
+
+    all_ret = {k: tf.concat(all_ret[k], 0) for k in all_ret}
+    return all_ret
 
 def render_us(H, W, sw, sh,
               chunk=1024 * 32, rays=None, c2w=None,
@@ -253,6 +327,38 @@ def render_us(H, W, sw, sh,
 
     # Render and reshape
     all_ret = batchify_rays(rays, c2w=c2w, chunk=chunk, **kwargs)
+    for k in all_ret:
+        k_sh = list(sh[:-1]) + list(all_ret[k].shape[1:])
+        all_ret[k] = tf.reshape(all_ret[k], k_sh)
+    return all_ret
+
+def render_us_compounding(H, W, sw, sh,
+              chunk=1024 * 32, rays=None, c2w=None,
+              near=0., far=55. * 0.001,
+              **kwargs):
+    """Render rays
+    """
+
+    if c2w is not None:
+        # special case to render full image
+        rays_o, rays_d = get_rays_us_linear(H, W, sw, sh, c2w)
+    else:
+        # use provided ray batch
+        rays_o, rays_d = rays
+
+    sh = rays_d.shape  # [..., 3]
+
+    # Create ray batch
+    rays_o = tf.cast(tf.reshape(rays_o, [-1, 3]), dtype=tf.float32)
+    rays_d = tf.cast(tf.reshape(rays_d, [-1, 3]), dtype=tf.float32)
+    near, far = near * \
+                tf.ones_like(rays_d[..., :1]), far * tf.ones_like(rays_d[..., :1])
+
+    # (ray origin, ray direction, min dist, max dist) for each ray
+    rays = tf.concat([rays_o, rays_d, near, far], axis=-1)
+
+    # Render and reshape
+    all_ret = batchify_rays_compounding(rays, c2w=c2w, chunk=chunk, **kwargs)
     for k in all_ret:
         k_sh = list(sh[:-1]) + list(all_ret[k].shape[1:])
         all_ret[k] = tf.reshape(all_ret[k], k_sh)
