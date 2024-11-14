@@ -1,5 +1,6 @@
 import numpy as np
 import os, imageio
+import tensorflow as tf
 
 
 ########## Slightly modified version of LLFF data loading code 
@@ -223,3 +224,35 @@ def load_us_data(basedir):
     poses = poses.astype(np.float32)
 
     return images, poses, i_test
+
+def load_us_data_lists(basedir_list):
+    result_images = []
+    result_poses = []
+    i = 0 
+    
+    for basedir in basedir_list:
+        poses, imgs = _load_data(basedir)
+        print('Loaded', basedir)
+        if i == 0:
+            result_images = imgs
+            result_poses = poses
+        else:
+            result_images = np.concatenate((result_images, imgs), axis=0)
+            result_poses = np.concatenate((result_poses, poses), axis=0)
+        i += 1
+
+    result_images = result_images
+    result_poses = result_poses
+    
+    c2w = poses_avg(result_poses)
+    print('Data:')
+    print(result_poses.shape, result_images.shape, )
+
+    dists = np.sum(np.square(c2w[:3, 3] - result_poses[:, :3, 3]), -1)
+    i_test = np.argmin(dists)
+    print('HOLDOUT view is', i_test)
+
+    result_images = result_images.astype(np.float32)
+    result_poses = result_poses.astype(np.float32)
+
+    return result_images, result_poses, i_test

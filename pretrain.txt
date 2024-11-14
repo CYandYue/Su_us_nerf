@@ -1,5 +1,5 @@
-expname = spine_phantom_left3
-loss = l2
+expname = spine_phantom_left12
+loss = ssim
 basedir = ./logs
 datadir = /home/cy/Gra_design/dataset/spine_phantom/left3
 no_batching = True

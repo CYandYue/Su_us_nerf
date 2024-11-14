@@ -16,7 +16,7 @@ import pathlib
 import matplotlib.pyplot as plt
 
 import pretrain as run_nerf_ultrasound
-from load_us import load_us_data
+from load_us import load_us_data, load_us_data_lists
 
 basedir = './logs'
 expname = 'spine_phantom_left12'
@@ -30,7 +30,12 @@ model_no = 'model_022000'
 args = parser.parse_args('--config {} --ft_path {}'.format(config, os.path.join(basedir, expname, model_no + ".npy")))
 print('loaded args')
 model_name = args.datadir.split("/")[-1]
-images, poses, i_test = load_us_data(args.datadir)
+# images, poses, i_test = load_us_data(args.datadir)
+data_dir_list = ["/home/cy/Gra_design/dataset/spine_phantom/left1", 
+                         "/home/cy/Gra_design/dataset/spine_phantom/left2" ]
+        
+images, poses, i_test = load_us_data_lists(data_dir_list)
+
 H, W = images[0].shape
 
 H = int(H)
@@ -109,7 +114,7 @@ for i, c2w in enumerate(poses):
     
     cloud_raw = tf.concat([position, prob_border, border_indicator], axis=-1)
 
-    cloud_filtered = cloud_raw[cloud_raw[..., 3] > 0.595]
+    cloud_filtered = cloud_raw[cloud_raw[..., 3] > 0.895]
     cloud_filtered = cloud_filtered[..., 0:3]
     
     # print(cloud_filtered)
