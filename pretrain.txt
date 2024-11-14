@@ -1,8 +1,7 @@
-expname = spine_phantom_all_sweeps
+expname = spine_phantom_left3
 loss = l2
 basedir = ./logs
-datadir = /home/cy/Gra_design/dataset/spine_phantom/all_sweeps
-dataset_type = us
+datadir = /home/cy/Gra_design/dataset/spine_phantom/left3
 no_batching = True
 output_ch = 5
 

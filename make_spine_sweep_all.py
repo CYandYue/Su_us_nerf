@@ -10,20 +10,20 @@ data_base = "/home/cy/Gra_design/dataset/spine_phantom/"
 result_images = []
 result_poses = []
     
-for item in data_dir:
-    data_path = os.path.join(data_base, item)
-    images, poses, i_test = load_us_data(data_path)
+# for item in data_dir:
+#     data_path = os.path.join(data_base, item)
+#     images, poses, i_test = load_us_data(data_path)
     
-    if item == "left1":
-        result_images = images
-        result_poses = poses
-    else:
-        result_images = tf.concat([result_images, images], axis=0)
-        result_poses = tf.concat([result_poses, poses], axis=0)
+#     if item == "left1":
+#         result_images = images
+#         result_poses = poses
+#     else:
+#         result_images = tf.concat([result_images, images], axis=0)
+#         result_poses = tf.concat([result_poses, poses], axis=0)
 
 
-np.save("/home/cy/Gra_design/dataset/spine_phantom/all_sweeps/images.npy", result_images)
-np.save("/home/cy/Gra_design/dataset/spine_phantom/all_sweeps/poses.npy", result_poses)
+# np.save("/home/cy/Gra_design/dataset/spine_phantom/all_sweeps/images.npy", result_images)
+# np.save("/home/cy/Gra_design/dataset/spine_phantom/all_sweeps/poses.npy", result_poses)
 
 
 def consolidate_images(folder_paths, output_folder):
@@ -34,10 +34,11 @@ def consolidate_images(folder_paths, output_folder):
     
 
     for folder_path in folder_paths:
-        image_files = sorted([f for f in os.listdir(folder_path) if f.endswith('.png')])
+        file_names = os.listdir(folder_path)
+        image_files_sorted = sorted(file_names, key=lambda x: int(os.path.splitext(x)[0]))
         
         # 遍历每个图片文件
-        for image_file in image_files:
+        for image_file in image_files_sorted:
             src_path = os.path.join(folder_path, image_file)
             dst_path = os.path.join(output_folder, f"{current_index}.png")
             

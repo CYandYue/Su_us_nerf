@@ -19,13 +19,13 @@ import pretrain as run_nerf_ultrasound
 from load_us import load_us_data
 
 basedir = './logs'
-expname = 'spine_phantom_left1'
+expname = 'spine_phantom_left2'
 
 config = os.path.join(basedir, expname, 'config.txt')
 print('Args:')
 print(open(config, 'r').read())
 parser = run_nerf_ultrasound.config_parser()
-model_no = 'model_020000'
+model_no = 'model_012000'
 
 args = parser.parse_args('--config {} --ft_path {}'.format(config, os.path.join(basedir, expname, model_no + ".npy")))
 print('loaded args')
@@ -109,12 +109,12 @@ for i, c2w in enumerate(poses):
     
     cloud_raw = tf.concat([position, prob_border, border_indicator], axis=-1)
 
-    cloud_filtered = cloud_raw[cloud_raw[..., 3] > 0.4]
+    cloud_filtered = cloud_raw[cloud_raw[..., 3] > 0.695]
     cloud_filtered = cloud_filtered[..., 0:3]
     
     # print(cloud_filtered)
     
-    sample_ratio = 1
+    sample_ratio = 10
     sample_size = int(cloud_filtered.shape[0] / sample_ratio)
     indices = np.random.choice(cloud_filtered.shape[0], size=sample_size, replace=False)
     # print(indices)
