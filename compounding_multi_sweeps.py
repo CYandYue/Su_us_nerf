@@ -114,7 +114,7 @@ for i, c2w in enumerate(poses):
     
     cloud_raw = tf.concat([position, prob_border, border_indicator], axis=-1)
 
-    cloud_filtered = cloud_raw[cloud_raw[..., 3] > 0.895]
+    cloud_filtered = cloud_raw[cloud_raw[..., 3] > 0.85]
     cloud_filtered = cloud_filtered[..., 0:3]
     
     # print(cloud_filtered)
