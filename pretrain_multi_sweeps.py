@@ -586,7 +586,14 @@ def train():
     # Load data
     if args.dataset_type == 'us':
         data_dir_list = ["/home/cy/Gra_design/dataset/spine_phantom/left1", 
-                         "/home/cy/Gra_design/dataset/spine_phantom/left2" ]
+                         "/home/cy/Gra_design/dataset/spine_phantom/left1_1", 
+                         "/home/cy/Gra_design/dataset/spine_phantom/left2", 
+                         "/home/cy/Gra_design/dataset/spine_phantom/left3", 
+                         "/home/cy/Gra_design/dataset/spine_phantom/left3_2", 
+                         "/home/cy/Gra_design/dataset/spine_phantom/right1", 
+                         "/home/cy/Gra_design/dataset/spine_phantom/right1_1", 
+                         "/home/cy/Gra_design/dataset/spine_phantom/right3", 
+                         "/home/cy/Gra_design/dataset/spine_phantom/right3_2", ]
         
         images, poses, i_test = load_us_data_lists(data_dir_list)
 

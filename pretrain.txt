@@ -1,4 +1,4 @@
-expname = spine_phantom_left12
+expname = spine_phantom_all_sweeps
 loss = ssim
 basedir = ./logs
 datadir = /home/cy/Gra_design/dataset/spine_phantom/left3

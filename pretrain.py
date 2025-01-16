@@ -354,6 +354,7 @@ def render_us_compounding(H, W, sw, sh,
     near, far = near * \
                 tf.ones_like(rays_d[..., :1]), far * tf.ones_like(rays_d[..., :1])
 
+    
     # (ray origin, ray direction, min dist, max dist) for each ray
     rays = tf.concat([rays_o, rays_d, near, far], axis=-1)
 

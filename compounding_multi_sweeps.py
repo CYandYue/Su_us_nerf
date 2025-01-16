@@ -19,7 +19,7 @@ import pretrain as run_nerf_ultrasound
 from load_us import load_us_data, load_us_data_lists
 
 basedir = './logs'
-expname = 'spine_phantom_left12'
+expname = 'spine_phantom_all_sweeps'
 
 config = os.path.join(basedir, expname, 'config.txt')
 print('Args:')
@@ -31,8 +31,18 @@ args = parser.parse_args('--config {} --ft_path {}'.format(config, os.path.join(
 print('loaded args')
 model_name = args.datadir.split("/")[-1]
 # images, poses, i_test = load_us_data(args.datadir)
+# data_dir_list = ["/home/cy/Gra_design/dataset/spine_phantom/left1", 
+#                          "/home/cy/Gra_design/dataset/spine_phantom/left2" ]
+
 data_dir_list = ["/home/cy/Gra_design/dataset/spine_phantom/left1", 
-                         "/home/cy/Gra_design/dataset/spine_phantom/left2" ]
+                         "/home/cy/Gra_design/dataset/spine_phantom/left1_1", 
+                         "/home/cy/Gra_design/dataset/spine_phantom/left2", 
+                         "/home/cy/Gra_design/dataset/spine_phantom/left3", 
+                         "/home/cy/Gra_design/dataset/spine_phantom/left3_2", 
+                         "/home/cy/Gra_design/dataset/spine_phantom/right1", 
+                         "/home/cy/Gra_design/dataset/spine_phantom/right1_1", 
+                         "/home/cy/Gra_design/dataset/spine_phantom/right3", 
+                         "/home/cy/Gra_design/dataset/spine_phantom/right3_2", ]
         
 images, poses, i_test = load_us_data_lists(data_dir_list)
 
@@ -114,12 +124,12 @@ for i, c2w in enumerate(poses):
     
     cloud_raw = tf.concat([position, prob_border, border_indicator], axis=-1)
 
-    cloud_filtered = cloud_raw[cloud_raw[..., 3] > 0.85]
+    cloud_filtered = cloud_raw[cloud_raw[..., 3] > 0.75]
     cloud_filtered = cloud_filtered[..., 0:3]
     
     # print(cloud_filtered)
     
-    sample_ratio = 100
+    sample_ratio = 10000
     sample_size = int(cloud_filtered.shape[0] / sample_ratio)
     indices = np.random.choice(cloud_filtered.shape[0], size=sample_size, replace=False)
     # print(indices)
