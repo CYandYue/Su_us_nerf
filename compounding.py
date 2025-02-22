@@ -109,7 +109,7 @@ for i, c2w in enumerate(poses):
     
     cloud_raw = tf.concat([position, prob_border, border_indicator], axis=-1)
 
-    cloud_filtered = cloud_raw[cloud_raw[..., 3] > 0.695]
+    cloud_filtered = cloud_raw[cloud_raw[..., 3] > 0.688]
     cloud_filtered = cloud_filtered[..., 0:3]
     
     # print(cloud_filtered)
@@ -133,51 +133,9 @@ o3d.visualization.draw_geometries([point_cloud])
     
 a = 10
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-#     imageio.imwrite(output_dir_output + "Generated " + str(1000 + i) + ".png",
-#                     tf.image.convert_image_dtype(tf.transpose(rendering_params['intensity_map']), tf.uint8))
-
-#     if rendering_params_save is None:
-#         rendering_params_save = dict()
-#         for key, value in rendering_params.items():
-#             rendering_params_save[key] = list()
-#     for key, value in rendering_params.items():
-#         rendering_params_save[key].append(tf.transpose(value).numpy())
-#         if np.all(rendering_params_save[key][0] == value):
-#             raise Exception
-
-#     if i == save_it:
-#         for key, value in rendering_params_save.items():
-#             np_to_save = np.array(value)
-#             np.save(f"{output_dir_params}/{key}.npy", np_to_save)
-#         rendering_params_save = None
-#     if i != save_it and i % save_it == 0 and i != 0:
-
-#         for key, value in rendering_params_save.items():
-#             f_name = f"{output_dir_params}/{key}.npy"
-#             np_to_save = np.array(value)
-#             np_existing = np.load(f_name)
-#             new_to_save = np.concatenate((np_existing, np_to_save), axis=0)
-#             np.save(f_name, new_to_save)
-#         rendering_params_save = None
-
-# for key, value in rendering_params_save.items():
-#     f_name = f"{output_dir_params}/{key}.npy"
-#     path_to_save = pathlib.Path(f_name)
-#     np_to_save = np.array(value)
-#     if path_to_save.exists():
-#         np_existing = np.load(f_name)
-#         np_to_save = np.concatenate((np_existing, np_to_save), axis=0)
-#     np.save(f_name, np_to_save)
+# # 保存
+# new_folder_path = ply_path = "/home/cy/Gra_design/us_nerf_pro/compounding_result_ply/" + expname
+# os.makedirs(new_folder_path, exist_ok=True)
+# ply_path = new_folder_path + "/" + model_no + ".ply"
+# o3d.io.write_point_cloud(ply_path, point_cloud)
+# print(f"Point cloud saved to {ply_path}")
