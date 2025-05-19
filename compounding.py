@@ -19,13 +19,13 @@ import pretrain as run_nerf_ultrasound
 from load_us import load_us_data
 
 basedir = './logs'
-expname = 'spine_phantom_left2'
+expname = 'spine_phantom_left2_'
 
 config = os.path.join(basedir, expname, 'config.txt')
 print('Args:')
 print(open(config, 'r').read())
 parser = run_nerf_ultrasound.config_parser()
-model_no = 'model_012000'
+model_no = 'model_022000'
 
 args = parser.parse_args('--config {} --ft_path {}'.format(config, os.path.join(basedir, expname, model_no + ".npy")))
 print('loaded args')
@@ -129,13 +129,13 @@ for i, c2w in enumerate(poses):
 
 point_cloud.points = o3d.utility.Vector3dVector(point_cloud_tf)
 # point_cloud.colors = o3d.utility.Vector3dVector(colors)
-o3d.visualization.draw_geometries([point_cloud])
+# o3d.visualization.draw_geometries([point_cloud])
     
 a = 10
     
-# # 保存
-# new_folder_path = ply_path = "/home/cy/Gra_design/us_nerf_pro/compounding_result_ply/" + expname
-# os.makedirs(new_folder_path, exist_ok=True)
-# ply_path = new_folder_path + "/" + model_no + ".ply"
-# o3d.io.write_point_cloud(ply_path, point_cloud)
-# print(f"Point cloud saved to {ply_path}")
+# 保存
+new_folder_path = "/home/cy/Gra_design/us_nerf_pro/compounding_result_ply/" + "spine_phantom_left2"
+os.makedirs(new_folder_path, exist_ok=True)
+ply_path = new_folder_path + "/" + model_no + ".ply"
+o3d.io.write_point_cloud(ply_path, point_cloud)
+print(f"Point cloud saved to {ply_path}")

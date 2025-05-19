@@ -29,19 +29,19 @@ epochs = [d[0] for d in data]
 losses = [d[1] for d in data]
 times = [d[2] for d in data]
 
-
+font_size = 26
 
 # 绘制 Loss vs Epoch
 plt.figure()
 
 # 设置刻度字体大小
-plt.xticks(fontsize=16)
-plt.yticks(fontsize=16)
+plt.xticks(fontsize=font_size)
+plt.yticks(fontsize=font_size)
 
 plt.plot(epochs, losses, marker='o', color='blue')
-plt.title("SSIM Loss vs Epoch",fontsize=16)
-plt.xlabel("Epoch",fontsize=16)
-plt.ylabel("SSIM Loss",fontsize=16)
+plt.title("SSIM Loss vs Epoch",fontsize=font_size)
+plt.xlabel("Epoch",fontsize=font_size)
+plt.ylabel("SSIM Loss",fontsize=font_size)
 plt.grid(True)
 plt.show()
 
@@ -49,13 +49,13 @@ plt.show()
 plt.figure()
 
 # 设置刻度字体大小
-plt.xticks(fontsize=16)
-plt.yticks(fontsize=16)
+plt.xticks(fontsize=font_size)
+plt.yticks(fontsize=font_size)
 
 plt.plot(epochs, times, marker='x', color='green')
-plt.title("Iteration Time vs Epoch",fontsize=16)
-plt.xlabel("Epoch",fontsize=16)
-plt.ylabel("Iteration Time (s)",fontsize=16)
+plt.title("Iteration Time vs Epoch",fontsize=font_size)
+plt.xlabel("Epoch",fontsize=font_size)
+plt.ylabel("Iteration Time (s)",fontsize=font_size)
 plt.grid(True)
 plt.show()
 # import matplotlib.pyplot as plt
