@@ -32,7 +32,7 @@ epochs = [d[0] for d in data]
 losses = [d[1] for d in data]
 times = [d[2] for d in data]
 
-font_size = 26
+font_size = 34
 
 # 绘制 Loss vs Epoch
 plt.figure()
