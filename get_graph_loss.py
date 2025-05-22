@@ -1,4 +1,7 @@
 import matplotlib.pyplot as plt
+from matplotlib import rcParams
+
+rcParams['font.family'] = 'Times New Roman'
 
 # 整理后的数据 (epoch, loss, iter_time)
 data = [
